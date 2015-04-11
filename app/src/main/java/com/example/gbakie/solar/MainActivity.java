@@ -2,7 +2,11 @@ package com.example.gbakie.solar;
 
 
 import android.app.Activity;
+<<<<<<< HEAD
 import android.content.Intent;
+=======
+import android.app.ProgressDialog;
+>>>>>>> 683b3749aff9c079f046263ece5e4f641f459727
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,17 +18,26 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends Activity {
 
     private EditText etZip;
+<<<<<<< HEAD
     public final static String MESSAGE1 = "com.example.gbakie.MESSAGE1";
+=======
+    private EditText etCapacity;
+>>>>>>> 683b3749aff9c079f046263ece5e4f641f459727
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +45,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         etZip = (EditText) findViewById(R.id.etZip);
+        etCapacity = (EditText) findViewById(R.id.etCapacity);
     }
 
 
@@ -58,27 +72,65 @@ public class MainActivity extends Activity {
     }
 
     public void onSendClick(View v) {
-        new DataRequest().execute(etZip.getText().toString());
+        String[] params = {etZip.getText().toString(), etCapacity.getText().toString()};
+        new DataRequest().execute(params);
     }
 
+<<<<<<< HEAD
     public void processFinish(String s) {
         Intent intent = new Intent(this, ResultActivity.class);
 
         intent.putExtra(MESSAGE1, s);
         startActivity(intent);
+=======
+    public void processData(String json) {
+        try {
+            JSONObject json_obj = new JSONObject(json);
+
+            JSONArray ac_monthly_json = json_obj.getJSONObject("outputs").getJSONArray("ac_monthly");
+            JSONArray solrad_monthly_json = json_obj.getJSONObject("outputs").getJSONArray("solrad_monthly");
+
+            List<Double> ac_monthly = new ArrayList<Double>();
+            if (ac_monthly_json != null)
+                for (int i = 0; i < ac_monthly_json.length(); i++)
+                    ac_monthly.add(ac_monthly_json.getDouble(i));
+
+
+            List<Double> solrad_monthly = new ArrayList<Double>();
+            if (solrad_monthly_json != null)
+                for (int i = 0; i < solrad_monthly_json.length(); i++)
+                    solrad_monthly.add(solrad_monthly_json.getDouble(i));
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+>>>>>>> 683b3749aff9c079f046263ece5e4f641f459727
     }
 
 
     public class DataRequest extends AsyncTask<String, Void, String> {
+<<<<<<< HEAD
 
+=======
+        private ProgressDialog pDialog;
+        @Override
+        protected void onPreExecute() {
+            pDialog = new ProgressDialog(MainActivity.this);
+            pDialog.setMessage("Getting Data ...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+>>>>>>> 683b3749aff9c079f046263ece5e4f641f459727
         @Override
         protected String doInBackground(String... params) {
             InputStream inputStream = null;
             String result = "";
 
             String zipcode = params[0];
-            String key = "DEMO_KEY";
-            String capacity = "4";
+            String key = "gnAQjxSNfEU5RJ24RESvkn4r38H8keBvJI4f8rIn";
+            String capacity = params[1];
             String azimuth = "180";
             String tilt = "40";
             String aType = "1";
@@ -109,7 +161,12 @@ public class MainActivity extends Activity {
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
+<<<<<<< HEAD
             processFinish(result);
+=======
+            pDialog.dismiss();
+            processData(result);
+>>>>>>> 683b3749aff9c079f046263ece5e4f641f459727
         }
 
         protected String convertStreamToText(InputStream is) throws IOException {
