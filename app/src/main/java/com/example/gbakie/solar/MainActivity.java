@@ -2,11 +2,8 @@ package com.example.gbakie.solar;
 
 
 import android.app.Activity;
-<<<<<<< HEAD
 import android.content.Intent;
-=======
 import android.app.ProgressDialog;
->>>>>>> 683b3749aff9c079f046263ece5e4f641f459727
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -33,11 +30,8 @@ import java.util.List;
 public class MainActivity extends Activity {
 
     private EditText etZip;
-<<<<<<< HEAD
     public final static String MESSAGE1 = "com.example.gbakie.MESSAGE1";
-=======
     private EditText etCapacity;
->>>>>>> 683b3749aff9c079f046263ece5e4f641f459727
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,13 +70,13 @@ public class MainActivity extends Activity {
         new DataRequest().execute(params);
     }
 
-<<<<<<< HEAD
     public void processFinish(String s) {
         Intent intent = new Intent(this, ResultActivity.class);
 
         intent.putExtra(MESSAGE1, s);
         startActivity(intent);
-=======
+    }
+
     public void processData(String json) {
         try {
             JSONObject json_obj = new JSONObject(json);
@@ -105,15 +99,12 @@ public class MainActivity extends Activity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
->>>>>>> 683b3749aff9c079f046263ece5e4f641f459727
     }
 
 
     public class DataRequest extends AsyncTask<String, Void, String> {
-<<<<<<< HEAD
-
-=======
         private ProgressDialog pDialog;
+
         @Override
         protected void onPreExecute() {
             pDialog = new ProgressDialog(MainActivity.this);
@@ -122,7 +113,7 @@ public class MainActivity extends Activity {
             pDialog.setCancelable(true);
             pDialog.show();
         }
->>>>>>> 683b3749aff9c079f046263ece5e4f641f459727
+
         @Override
         protected String doInBackground(String... params) {
             InputStream inputStream = null;
@@ -161,12 +152,9 @@ public class MainActivity extends Activity {
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
-<<<<<<< HEAD
-            processFinish(result);
-=======
             pDialog.dismiss();
             processData(result);
->>>>>>> 683b3749aff9c079f046263ece5e4f641f459727
+            processFinish(result);
         }
 
         protected String convertStreamToText(InputStream is) throws IOException {
