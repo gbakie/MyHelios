@@ -4,4 +4,32 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_result">ResultActivity</string>
+
+
+    <string-array name="capacity">
+        <item>1 KW</item>
+        <item>2 KW</item>
+        <item>3 KW</item>
+        <item>4 KW</item>
+        <item>5 KW</item>
+        <item>6 KW</item>
+        <item>7 KW</item>
+        <item>8 KW</item>
+        <item>9 KW</item>
+        <item>10 KW</item>
+    </string-array>
+
+    <string-array name="occupants">
+        <item>1 person</item>
+        <item>2 persons</item>
+        <item>3 persons</item>
+        <item>4 persons</item>
+        <item>5 persons</item>
+        <item>6 persons</item>
+        <item>7 persons</item>
+        <item>8 persons</item>
+        <item>9 persons</item>
+        <item>10 persons</item>
+    </string-array>
+
 </resources>

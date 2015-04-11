@@ -9,7 +9,9 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -31,15 +33,27 @@ public class MainActivity extends Activity {
 
     private EditText etZip;
     public final static String MESSAGE1 = "com.example.gbakie.MESSAGE1";
-    private EditText etCapacity;
+    //private EditText etCapacity;
+    private Spinner spCapacity;
+    private Spinner spOccupants;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ArrayAdapter<CharSequence> adaptCapacity = ArrayAdapter.createFromResource(this,
+                R.array.capacity, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adaptOccupants = ArrayAdapter.createFromResource(this,
+                R.array.occupants, android.R.layout.simple_spinner_item);
+
         etZip = (EditText) findViewById(R.id.etZip);
-        etCapacity = (EditText) findViewById(R.id.etCapacity);
+        //etCapacity = (EditText) findViewById(R.id.etCapacity);
+        spCapacity = (Spinner) findViewById(R.id.spCapacity);
+        spCapacity.setAdapter(adaptCapacity);
+
+        spOccupants = (Spinner) findViewById(R.id.spOccupants);
+        spOccupants.setAdapter(adaptOccupants);
     }
 
 
@@ -66,7 +80,9 @@ public class MainActivity extends Activity {
     }
 
     public void onSendClick(View v) {
-        String[] params = {etZip.getText().toString(), etCapacity.getText().toString()};
+        //String[] params = {etZip.getText().toString(), etCapacity.getText().toString()};
+        String[] params = {etZip.getText().toString(), Integer.toString(spCapacity.getSelectedItemPosition() + 1)};
+
         new DataRequest().execute(params);
     }
 

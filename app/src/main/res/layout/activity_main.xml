@@ -21,19 +21,20 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:id="@+id/etZip"
+        android:inputType="number"
         android:layout_alignTop="@+id/tvZip"
-        android:layout_toEndOf="@+id/tvZip"
-        android:inputType="number" />
+        android:layout_toEndOf="@+id/tvCapacity"
+        android:layout_marginStart="30dp" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Send"
         android:id="@+id/btSend"
-        android:layout_below="@+id/etZip"
-        android:layout_alignEnd="@+id/etZip"
-        android:layout_marginTop="50dp"
-        android:onClick="onSendClick" />
+        android:onClick="onSendClick"
+        android:layout_below="@+id/spCapacity"
+        android:layout_alignEnd="@+id/spCapacity"
+        android:layout_marginTop="98dp" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -53,12 +54,31 @@
         android:layout_below="@+id/etZip"
         android:layout_alignParentStart="true" />
 
-    <EditText
+    <Spinner
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:id="@+id/etCapacity"
-        android:inputType="number"
+        android:id="@+id/spCapacity"
         android:layout_below="@+id/etZip"
-        android:layout_toEndOf="@+id/tvCapacity" />
+        android:layout_alignStart="@+id/etZip"
+        android:layout_alignEnd="@+id/etZip"
+        android:spinnerMode="dropdown" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Occupants"
+        android:id="@+id/tvOccupants"
+        android:layout_marginTop="26dp"
+        android:layout_below="@+id/spCapacity"
+        android:layout_alignParentStart="true" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/spOccupants"
+        android:layout_alignTop="@+id/tvOccupants"
+        android:layout_alignStart="@+id/spCapacity"
+        android:spinnerMode="dropdown" />
+
 </RelativeLayout>
