@@ -28,6 +28,7 @@ import java.util.List;
 public class MainActivity extends Activity {
 
     private EditText etZip;
+    private EditText etCapacity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +36,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         etZip = (EditText) findViewById(R.id.etZip);
+        etCapacity = (EditText) findViewById(R.id.etCapacity);
     }
 
 
@@ -61,7 +63,8 @@ public class MainActivity extends Activity {
     }
 
     public void onSendClick(View v) {
-        new DataRequest().execute(etZip.getText().toString());
+        String[] params = {etZip.getText().toString(), etCapacity.getText().toString()};
+        new DataRequest().execute(params);
     }
 
     public void processData(String json) {
@@ -105,8 +108,8 @@ public class MainActivity extends Activity {
             String result = "";
 
             String zipcode = params[0];
-            String key = "DEMO_KEY";
-            String capacity = "4";
+            String key = "gnAQjxSNfEU5RJ24RESvkn4r38H8keBvJI4f8rIn";
+            String capacity = params[1];
             String azimuth = "180";
             String tilt = "40";
             String aType = "1";
