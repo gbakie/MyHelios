@@ -1,17 +1,27 @@
 package com.example.gbakie.solar;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 
 public class ResultActivity extends Activity {
+
+    private TextView tvPower;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
+
+        Intent intent = getIntent();
+        String message = intent.getStringExtra(MainActivity.MESSAGE1);
+
+        tvPower = (TextView)findViewById(R.id.tvPower);
+        tvPower.setText(message);
     }
 
 

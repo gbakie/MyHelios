@@ -1,6 +1,8 @@
 package com.example.gbakie.solar;
 
+
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -22,6 +24,7 @@ import java.io.InputStreamReader;
 public class MainActivity extends Activity {
 
     private EditText etZip;
+    public final static String MESSAGE1 = "com.example.gbakie.MESSAGE1";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +61,16 @@ public class MainActivity extends Activity {
         new DataRequest().execute(etZip.getText().toString());
     }
 
+    public void processFinish(String s) {
+        Intent intent = new Intent(this, ResultActivity.class);
+
+        intent.putExtra(MESSAGE1, s);
+        startActivity(intent);
+    }
+
+
     public class DataRequest extends AsyncTask<String, Void, String> {
+
         @Override
         protected String doInBackground(String... params) {
             InputStream inputStream = null;
@@ -97,7 +109,7 @@ public class MainActivity extends Activity {
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
-            
+            processFinish(result);
         }
 
         protected String convertStreamToText(InputStream is) throws IOException {
