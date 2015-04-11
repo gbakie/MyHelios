@@ -1,6 +1,7 @@
 package com.example.gbakie.solar;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,11 +13,16 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends Activity {
@@ -58,7 +64,41 @@ public class MainActivity extends Activity {
         new DataRequest().execute(etZip.getText().toString());
     }
 
+    public void processData(String json) {
+        try {
+            JSONObject json_obj = new JSONObject(json);
+
+            JSONArray ac_monthly_json = json_obj.getJSONObject("outputs").getJSONArray("ac_monthly");
+            JSONArray solrad_monthly_json = json_obj.getJSONObject("outputs").getJSONArray("solrad_monthly");
+
+            List<Double> ac_monthly = new ArrayList<Double>();
+            if (ac_monthly_json != null)
+                for (int i = 0; i < ac_monthly_json.length(); i++)
+                    ac_monthly.add(ac_monthly_json.getDouble(i));
+
+
+            List<Double> solrad_monthly = new ArrayList<Double>();
+            if (solrad_monthly_json != null)
+                for (int i = 0; i < solrad_monthly_json.length(); i++)
+                    solrad_monthly.add(solrad_monthly_json.getDouble(i));
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public class DataRequest extends AsyncTask<String, Void, String> {
+        private ProgressDialog pDialog;
+        @Override
+        protected void onPreExecute() {
+            pDialog = new ProgressDialog(MainActivity.this);
+            pDialog.setMessage("Getting Data ...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
         @Override
         protected String doInBackground(String... params) {
             InputStream inputStream = null;
@@ -97,7 +137,8 @@ public class MainActivity extends Activity {
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
-            
+            pDialog.dismiss();
+            processData(result);
         }
 
         protected String convertStreamToText(InputStream is) throws IOException {

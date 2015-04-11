@@ -19,11 +19,11 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textPostalAddress"
         android:ems="10"
         android:id="@+id/etZip"
         android:layout_alignTop="@+id/tvZip"
-        android:layout_toEndOf="@+id/tvZip" />
+        android:layout_toEndOf="@+id/tvZip"
+        android:inputType="number" />
 
     <Button
         android:layout_width="wrap_content"
