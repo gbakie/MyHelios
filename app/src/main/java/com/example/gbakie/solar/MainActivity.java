@@ -38,6 +38,7 @@ public class MainActivity extends Activity {
     public final static String AC_MONTHLY = "com.example.gbakie.AC_MONTHLY";
     public final static String SOLRAD_MONTHLY = "com.example.gbakie.SOLRAD_MONTHLY";
     public final static String OCCUPANTS = "com.example.gbakie.OCCUPANTS";
+    public final static String CAPACITY = "com.example.gbakie.CAPACITY";
 
 
     @Override
@@ -121,6 +122,7 @@ public class MainActivity extends Activity {
         intent.putExtra(AC_MONTHLY, ac_monthly);
         intent.putExtra(SOLRAD_MONTHLY, solrad_monthly);
         intent.putExtra(OCCUPANTS, spOccupants.getSelectedItemPosition() + 1);
+        intent.putExtra(CAPACITY, spCapacity.getSelectedItemPosition() + 1);
         startActivity(intent);
     }
 

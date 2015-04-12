@@ -35,25 +35,54 @@ public class ResultActivity extends Activity {
     // natural gas price $ / kWh
     private final static double NG_PRICE[] = {0.04928309,0.04689402, 0.050989568, 0.053617544, 0.05003394, 0.050477624, 0.054846208, 0.055255763, 0.052423009, 0.044743858, 0.04928309, 0.050580013};
     private final static int DAYS_IN_MONTH[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-
-    // Initial cost per Kw capacity
-    private final static int INITIAL_COST_KW = 4240;
-
+    // electricity price $ / kWh
+    private final static double ELECTRICITY_PRICE[] = {0.24, 0.241, 0.241, 0.18, 0.18, 0.18, 0.18, 0.18, 0.189, 0.186, 0.185, 0.195};
+    // PV system cost in $ / kW
+    private final static double PV_SYSTEM_COST = 4240;
+    // maintenance cost per year $ / kW
+    private final static double MAINTENANCE_COST_YEAR = 20;
+    // federal tax incentive
+    private final static double TAX_INCENTIVE = 0.3;
+    // yearly increase in electricity price
+    private final static double ELECTRICITY_INCREASE_YEAR = 0.05;
+    // yearly increase in maintenance price
+    private final static double MAINTENANCE_INCREASE_YEAR = 0.02;
+    // internal rate of return
+    private final static double IRR = 0.07;
+    // system lifespan in years
+    private final static int SYSTEM_LIFESPAN = 20;
     // Cut rate on initial price
     private final static double CUT_RATE = 0.3;
 
     // avoid co2 emission in pounds per kwh
     private final static double CARBON_POUNDS_PER_KWH = 0.905;
 
-    // KWH price
-    private final static double PRICE_KWH = 0.8;
-
     private TextView tvEnergyMonth;
     private TextView tvEnergyYear;
     private Spinner spMonth;
     private TextView tvSavingMonth;
 
-    private double[] ac_montly;
+    private double[] solrad_monthly;
+    private int household_size;
+    private int capacity;
+
+    private double thermal_energy_savings_year;
+    private double thermal_dollar_savings_year;
+    private double thermal_percentage_savings_year;
+
+    private double[] thermal_monthly_energy_savings = new double[12];
+    private double[] thermal_monthly_dollar_savings = new double[12];
+    private double[] thermal_monthly_percentage_savings = new double[12];
+    private double[] thermal_monthly_carbon_savings = new double[12];
+
+    private double[] pv_monthly_energy_savings;
+    private double[] pv_monthly_carbon_savings = new double[12];
+    private double[] pv_monthly_dollar_savings = new double[12];
+
+    private double pv_carbon_savings_year;
+    private double pv_dollar_savings_year;
+    private double pv_energy_savings_year;
+    private int payback_year;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,23 +90,65 @@ public class ResultActivity extends Activity {
         setContentView(R.layout.activity_result);
 
         Intent intent = getIntent();
-        ac_montly = intent.getDoubleArrayExtra(MainActivity.AC_MONTHLY);
-        double[] solrad_monthly = intent.getDoubleArrayExtra(MainActivity.SOLRAD_MONTHLY);
-        int household_size = intent.getIntExtra(MainActivity.OCCUPANTS, 0);
+        pv_monthly_energy_savings = intent.getDoubleArrayExtra(MainActivity.AC_MONTHLY);
+        solrad_monthly = intent.getDoubleArrayExtra(MainActivity.SOLRAD_MONTHLY);
+        household_size = intent.getIntExtra(MainActivity.OCCUPANTS, 0);
+        capacity = intent.getIntExtra(MainActivity.CAPACITY, 0);
 
+        calculateThermal();
+        calculatePV();
+        calculatePVPayback();
+
+        tvEnergyMonth = (TextView) findViewById(R.id.tvEnergyMonth);
+        spMonth = (Spinner) findViewById(R.id.spMonth);
+        tvSavingMonth = (TextView) findViewById(R.id.tvSavingMonth);
+        //tvEnergyYear = (TextView) findViewById(R.id.tvEnergyYear);
+
+
+        ArrayAdapter<CharSequence> adaptMonth = ArrayAdapter.createFromResource(this,
+                R.array.month, android.R.layout.simple_spinner_item);
+        spMonth.setAdapter(adaptMonth);
+
+
+        spMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                int m = spMonth.getSelectedItemPosition();
+                double ac = pv_monthly_energy_savings[m];
+                double es = pv_monthly_dollar_savings[m];
+                DecimalFormat df = new DecimalFormat("#.00");
+
+                tvEnergyMonth.setText(df.format(ac) + " kWh");
+                tvSavingMonth.setText("$" + df.format(es));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+                // TODO Auto-generated method stub
+
+            }
+        });
+
+        Date d = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(d);
+        int month = cal.get(Calendar.MONTH);
+        spMonth.setSelection(month);
+    }
+
+    public void calculateThermal() {
         double daily_dhw_consumption = DHWC_PERSON * household_size;
         // energy demand for domestic hot water in kWh
         double thermal_daily_energy_demand =  daily_dhw_consumption * WATER_SH * DELTA_TEMP *  0.000278;
 
         double[] thermal_monthly_energy_demand = new double[12];
-        double[] thermal_monthly_energy_savings = new double[12];
-        double[] thermal_monthly_dollar_savings = new double[12];
-        double[] thermal_monthly_percentage_savings = new double[12];
+
+        thermal_energy_savings_year = 0;
+        thermal_dollar_savings_year = 0;
+        thermal_percentage_savings_year = 0;
 
         double thermal_energy_demand_year = 0;
-        double thermal_energy_savings_year = 0;
-        double thermal_dollar_savings_year = 0;
-        double thermal_percentage_savings_year = 0;
 
         // monthly calculations
         for (int i = 0; i < 12; i++) {
@@ -92,48 +163,57 @@ public class ResultActivity extends Activity {
         }
 
         thermal_percentage_savings_year = thermal_percentage_savings_year / 12;
-
-        calculateEnergyYear(solrad_monthly);
-
-        tvEnergyMonth = (TextView) findViewById(R.id.tvEnergyMonth);
-        spMonth = (Spinner) findViewById(R.id.spMonth);
-        tvSavingMonth = (TextView) findViewById(R.id.tvSavingMonth);
-        //tvEnergyYear = (TextView) findViewById(R.id.tvEnergyYear);
-
-
-        ArrayAdapter<CharSequence> adaptMonth = ArrayAdapter.createFromResource(this,
-                R.array.month, android.R.layout.simple_spinner_item);
-        spMonth.setAdapter(adaptMonth);
-
-
-        Date d = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(d);
-        int month = cal.get(Calendar.MONTH);
-
-        spMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> arg0, View arg1,
-                                       int arg2, long arg3) {
-                int m = spMonth.getSelectedItemPosition();
-                double ac = ac_montly[m];
-                double es = calculateMoneySaving(ac);
-                DecimalFormat df = new DecimalFormat("#.00");
-
-                tvEnergyMonth.setText(df.format(ac) + " kWh");
-                tvSavingMonth.setText("$" + df.format(es));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-                // TODO Auto-generated method stub
-
-            }
-        });
-        spMonth.setSelection(month);
     }
 
+    public void calculatePV() {
+        pv_carbon_savings_year = 0;
+        pv_dollar_savings_year = 0;
+        pv_energy_savings_year = 0;
+
+        // monthly calculations
+        for (int i = 0; i < 12; i++) {
+            pv_energy_savings_year += pv_monthly_energy_savings[i];
+            pv_monthly_dollar_savings[i] = pv_monthly_energy_savings[i] * ELECTRICITY_PRICE[i];
+            pv_dollar_savings_year += pv_monthly_dollar_savings[i];
+            pv_monthly_carbon_savings[i] = pv_monthly_energy_savings[i] * CARBON_POUNDS_PER_KWH;
+            pv_carbon_savings_year += pv_monthly_carbon_savings[i];
+        }
+    }
+
+    public void calculatePVPayback() {
+        double yearly_electricity_price = 0;
+        for (int i = 0; i < 12; i++)
+            yearly_electricity_price += ELECTRICITY_PRICE[i];
+        yearly_electricity_price = yearly_electricity_price / 12;
+
+
+        double[] electricity_price = new double[SYSTEM_LIFESPAN];
+        double[] maintenance_cost = new double[SYSTEM_LIFESPAN];
+        double[] cashflow = new double[SYSTEM_LIFESPAN];
+        double[] dr_cashflow = new double[SYSTEM_LIFESPAN];
+        double[] payback = new double[SYSTEM_LIFESPAN];
+
+        double pv_investment = capacity * PV_SYSTEM_COST * (1 - TAX_INCENTIVE);
+        electricity_price[0] = yearly_electricity_price;
+        maintenance_cost[0] = MAINTENANCE_COST_YEAR;
+        cashflow[0] = -pv_investment;
+        dr_cashflow[0] = cashflow[0];
+        payback[0] = dr_cashflow[0];
+
+        for (int i = 1; i < SYSTEM_LIFESPAN; i++) {
+            electricity_price[i] = electricity_price[i-1] * (1 + ELECTRICITY_INCREASE_YEAR);
+            maintenance_cost[i] = maintenance_cost[i-1] * (1 + MAINTENANCE_INCREASE_YEAR);
+            cashflow[i] = pv_energy_savings_year * electricity_price[i] - maintenance_cost[i];
+            dr_cashflow[i] = cashflow[i] / Math.pow(1+ IRR, i);
+            payback[i] = payback[i-1] + dr_cashflow[i];
+        }
+
+        int payback_year = 0;
+        while (payback_year < SYSTEM_LIFESPAN && payback[payback_year] <= 0)
+            payback_year++;
+
+        int i = 0;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -157,22 +237,5 @@ public class ResultActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    public double calculateEnergyYear(double[] powerMonth) {
-        double total = 0;
-
-        for (int i = 0; i < powerMonth.length; i++) {
-            total += powerMonth[i];
-        }
-
-        return total;
-    }
-
-    public double calculateCarbon(double energy) {
-        return energy * CARBON_POUNDS_PER_KWH;
-    }
-
-    public double calculateMoneySaving(double energy) {
-        return energy * PRICE_KWH;
-    }
 
 }
