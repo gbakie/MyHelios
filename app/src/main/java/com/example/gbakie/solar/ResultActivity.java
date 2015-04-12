@@ -61,6 +61,9 @@ public class ResultActivity extends Activity {
     private TextView tvEnergyYear;
     private Spinner spMonth;
     private TextView tvSavingMonth;
+    private TextView tvCO2;
+    private TextView tvSavingYear;
+    private TextView tvCO2Year;
 
     private double[] solrad_monthly;
     private int household_size;
@@ -102,8 +105,15 @@ public class ResultActivity extends Activity {
         tvEnergyMonth = (TextView) findViewById(R.id.tvEnergyMonth);
         spMonth = (Spinner) findViewById(R.id.spMonth);
         tvSavingMonth = (TextView) findViewById(R.id.tvSavingMonth);
-        //tvEnergyYear = (TextView) findViewById(R.id.tvEnergyYear);
+        tvCO2 = (TextView) findViewById(R.id.tvCO2);
+        tvEnergyYear = (TextView) findViewById(R.id.tvEnergyYear);
+        tvSavingYear = (TextView) findViewById(R.id.tvSavingYear);
+        tvCO2Year = (TextView) findViewById(R.id.tvCO2Year);
 
+        DecimalFormat df = new DecimalFormat("#.00");
+        tvEnergyYear.setText(df.format(pv_energy_savings_year) + " kW");
+        tvSavingYear.setText("$" + df.format(pv_dollar_savings_year));
+        tvCO2Year.setText(df.format(pv_carbon_savings_year) + " pounds");
 
         ArrayAdapter<CharSequence> adaptMonth = ArrayAdapter.createFromResource(this,
                 R.array.month, android.R.layout.simple_spinner_item);
@@ -117,10 +127,12 @@ public class ResultActivity extends Activity {
                 int m = spMonth.getSelectedItemPosition();
                 double ac = pv_monthly_energy_savings[m];
                 double es = pv_monthly_dollar_savings[m];
+                double co2 = pv_monthly_carbon_savings[m];
                 DecimalFormat df = new DecimalFormat("#.00");
 
                 tvEnergyMonth.setText(df.format(ac) + " kWh");
                 tvSavingMonth.setText("$" + df.format(es));
+                tvCO2.setText(df.format(co2) + " pounds");
             }
 
             @Override
@@ -154,7 +166,7 @@ public class ResultActivity extends Activity {
         for (int i = 0; i < 12; i++) {
             thermal_monthly_energy_demand[i] = DAYS_IN_MONTH[i] * thermal_daily_energy_demand / NG_SYS_EFF;
             thermal_energy_demand_year += thermal_monthly_energy_demand[i];
-            thermal_monthly_energy_savings[i] = SOLAR_SYS_EFF[i] * COLLECTOR_SIZE * NUM_COLLECTORS * solrad_monthly[i] * DAYS_IN_MONTH[i];
+            //thermal_monthly_energy_savings[i] = SOLAR_SYS_EFF[i] * COLLECTOR_SIZE * NUM_COLLECTORS * solrad_monthly[i] * DAYS_IN_MONTH[i];
             thermal_energy_savings_year += thermal_monthly_energy_savings[i];
             thermal_monthly_dollar_savings[i] = NG_PRICE[i] * thermal_monthly_energy_savings[i];
             thermal_dollar_savings_year += thermal_monthly_dollar_savings[i];
