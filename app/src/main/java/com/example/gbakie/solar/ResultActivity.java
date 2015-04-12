@@ -70,6 +70,7 @@ public class ResultActivity extends Activity {
     private TextView tvThermalEnergy;
     private TextView tvThermalSavings;
     private TextView tvThermalCO2;
+    private TextView tvThermalPer;
 
     private double[] solrad_monthly;
     private int household_size;
@@ -120,6 +121,7 @@ public class ResultActivity extends Activity {
         tvThermalEnergy = (TextView) findViewById(R.id.tvThermalEnergy);
         tvThermalSavings = (TextView) findViewById(R.id.tvThermalSavings);
         tvThermalCO2 = (TextView) findViewById(R.id.tvThermalCO2);
+        tvThermalPer = (TextView) findViewById(R.id.tvSavePer);
 
         DecimalFormat df = new DecimalFormat("#.00");
         tvEnergyYear.setText(df.format(pv_energy_savings_year) + " kW");
@@ -135,6 +137,7 @@ public class ResultActivity extends Activity {
         tvThermalEnergy.setText(df.format(thermal_energy_savings_year) + " kW");
         tvThermalSavings.setText("$" + df.format(thermal_dollar_savings_year));
         tvThermalCO2.setText(df.format(thermal_carbon_savings_year) + " pounds");
+        tvThermalPer.setText(df.format(thermal_percentage_savings_year * 100));
 
         ArrayAdapter<CharSequence> adaptMonth = ArrayAdapter.createFromResource(this,
                 R.array.month, android.R.layout.simple_spinner_item);
