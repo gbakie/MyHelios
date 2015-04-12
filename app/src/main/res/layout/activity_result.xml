@@ -154,4 +154,22 @@
         android:layout_alignTop="@+id/text3"
         android:layout_alignEnd="@+id/spMonth" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="PV Payback:"
+        android:id="@+id/dgfsdfg"
+        android:layout_below="@+id/textView"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="40dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/tvPayback"
+        android:layout_alignTop="@+id/dgfsdfg"
+        android:layout_toEndOf="@+id/textView" />
+
 </RelativeLayout>

@@ -66,6 +66,7 @@ public class ResultActivity extends Activity {
     private TextView tvCO2;
     private TextView tvSavingYear;
     private TextView tvCO2Year;
+    private TextView tvPayback;
 
     private double[] solrad_monthly;
     private int household_size;
@@ -112,11 +113,17 @@ public class ResultActivity extends Activity {
         tvEnergyYear = (TextView) findViewById(R.id.tvEnergyYear);
         tvSavingYear = (TextView) findViewById(R.id.tvSavingYear);
         tvCO2Year = (TextView) findViewById(R.id.tvCO2Year);
+        tvPayback = (TextView) findViewById(R.id.tvPayback);
 
         DecimalFormat df = new DecimalFormat("#.00");
         tvEnergyYear.setText(df.format(pv_energy_savings_year) + " kW");
         tvSavingYear.setText("$" + df.format(pv_dollar_savings_year));
         tvCO2Year.setText(df.format(pv_carbon_savings_year) + " pounds");
+
+        if (payback_year > 20)
+            tvPayback.setText("20+ years");
+        else
+            tvPayback.setText(Integer.toString(payback_year) + " years");
 
         ArrayAdapter<CharSequence> adaptMonth = ArrayAdapter.createFromResource(this,
                 R.array.month, android.R.layout.simple_spinner_item);
