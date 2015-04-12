@@ -12,6 +12,18 @@ public class ResultActivity extends Activity {
 
     private TextView tvPower;
 
+    // Initial cost per Kw capacity
+    private final static int INITIAL_COST_KW = 4240;
+
+    // Cut rate on initial price
+    private final static double CUT_RATE = 0.3;
+
+    // avoid co2 emission in pounds per kwh
+    private final static double CARBON_POUNDS_PER_KWH = 0.905;
+
+    // KWH price
+    private final static double PRICE_KWH = 0.8;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,4 +58,23 @@ public class ResultActivity extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    public double calculateEnergyYear(double[] powerMonth) {
+        double total = 0;
+
+        for (int i = 0; i < powerMonth.length; i++) {
+            total += powerMonth[i];
+        }
+
+        return total;
+    }
+
+    public double calculateCarbon(double energy) {
+        return energy * CARBON_POUNDS_PER_KWH;
+    }
+
+    public double calculateMoneySaving(double energy) {
+        return energy * PRICE_KWH;
+    }
+
 }
