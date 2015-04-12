@@ -55,7 +55,9 @@ public class ResultActivity extends Activity {
     private final static double CUT_RATE = 0.3;
 
     // avoid co2 emission in pounds per kwh
-    private final static double CARBON_POUNDS_PER_KWH = 0.905;
+    private final static double CARBON_POUNDS_PER_KWH_PV = 0.905;
+    // avoid co2 emission in pounds per kwh for thermal
+    private final static double CARBON_POUNDS_PER_KWH_THERMAL = 0.905;
 
     private TextView tvEnergyMonth;
     private TextView tvEnergyYear;
@@ -72,6 +74,7 @@ public class ResultActivity extends Activity {
     private double thermal_energy_savings_year;
     private double thermal_dollar_savings_year;
     private double thermal_percentage_savings_year;
+    private double thermal_carbon_savings_year;
 
     private double[] thermal_monthly_energy_savings = new double[12];
     private double[] thermal_monthly_dollar_savings = new double[12];
@@ -166,15 +169,16 @@ public class ResultActivity extends Activity {
         for (int i = 0; i < 12; i++) {
             thermal_monthly_energy_demand[i] = DAYS_IN_MONTH[i] * thermal_daily_energy_demand / NG_SYS_EFF;
             thermal_energy_demand_year += thermal_monthly_energy_demand[i];
-            //thermal_monthly_energy_savings[i] = SOLAR_SYS_EFF[i] * COLLECTOR_SIZE * NUM_COLLECTORS * solrad_monthly[i] * DAYS_IN_MONTH[i];
+            thermal_monthly_energy_savings[i] = SOLAR_SYS_EFF[i] * COLLECTOR_SIZE * NUM_COLLECTORS * solrad_monthly[i] * DAYS_IN_MONTH[i];
             thermal_energy_savings_year += thermal_monthly_energy_savings[i];
             thermal_monthly_dollar_savings[i] = NG_PRICE[i] * thermal_monthly_energy_savings[i];
             thermal_dollar_savings_year += thermal_monthly_dollar_savings[i];
             thermal_monthly_percentage_savings[i] = thermal_monthly_energy_savings[i] / thermal_monthly_energy_demand[i];
             thermal_percentage_savings_year += thermal_monthly_percentage_savings[i];
+            thermal_monthly_carbon_savings[i] = thermal_monthly_energy_savings[i] * CARBON_POUNDS_PER_KWH_THERMAL;
         }
-
         thermal_percentage_savings_year = thermal_percentage_savings_year / 12;
+        thermal_carbon_savings_year = thermal_energy_savings_year * CARBON_POUNDS_PER_KWH_THERMAL;
     }
 
     public void calculatePV() {
@@ -187,7 +191,7 @@ public class ResultActivity extends Activity {
             pv_energy_savings_year += pv_monthly_energy_savings[i];
             pv_monthly_dollar_savings[i] = pv_monthly_energy_savings[i] * ELECTRICITY_PRICE[i];
             pv_dollar_savings_year += pv_monthly_dollar_savings[i];
-            pv_monthly_carbon_savings[i] = pv_monthly_energy_savings[i] * CARBON_POUNDS_PER_KWH;
+            pv_monthly_carbon_savings[i] = pv_monthly_energy_savings[i] * CARBON_POUNDS_PER_KWH_PV;
             pv_carbon_savings_year += pv_monthly_carbon_savings[i];
         }
     }
@@ -220,11 +224,10 @@ public class ResultActivity extends Activity {
             payback[i] = payback[i-1] + dr_cashflow[i];
         }
 
-        int payback_year = 0;
+        payback_year = 0;
         while (payback_year < SYSTEM_LIFESPAN && payback[payback_year] <= 0)
             payback_year++;
 
-        int i = 0;
     }
 
     @Override
