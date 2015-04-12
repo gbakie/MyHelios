@@ -5,7 +5,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
+
+import java.text.DecimalFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 
 public class ResultActivity extends Activity {
@@ -28,8 +36,6 @@ public class ResultActivity extends Activity {
     private final static double NG_PRICE[] = {0.04928309,0.04689402, 0.050989568, 0.053617544, 0.05003394, 0.050477624, 0.054846208, 0.055255763, 0.052423009, 0.044743858, 0.04928309, 0.050580013};
     private final static int DAYS_IN_MONTH[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
-    private TextView tvPower;
-
     // Initial cost per Kw capacity
     private final static int INITIAL_COST_KW = 4240;
 
@@ -42,13 +48,20 @@ public class ResultActivity extends Activity {
     // KWH price
     private final static double PRICE_KWH = 0.8;
 
+    private TextView tvEnergyMonth;
+    private TextView tvEnergyYear;
+    private Spinner spMonth;
+    private TextView tvSavingMonth;
+
+    private double[] ac_montly;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
 
         Intent intent = getIntent();
-        double[] ac_montly = intent.getDoubleArrayExtra(MainActivity.AC_MONTHLY);
+        ac_montly = intent.getDoubleArrayExtra(MainActivity.AC_MONTHLY);
         double[] solrad_monthly = intent.getDoubleArrayExtra(MainActivity.SOLRAD_MONTHLY);
         int household_size = intent.getIntExtra(MainActivity.OCCUPANTS, 0);
 
@@ -79,6 +92,46 @@ public class ResultActivity extends Activity {
         }
 
         thermal_percentage_savings_year = thermal_percentage_savings_year / 12;
+
+        calculateEnergyYear(solrad_monthly);
+
+        tvEnergyMonth = (TextView) findViewById(R.id.tvEnergyMonth);
+        spMonth = (Spinner) findViewById(R.id.spMonth);
+        tvSavingMonth = (TextView) findViewById(R.id.tvSavingMonth);
+        //tvEnergyYear = (TextView) findViewById(R.id.tvEnergyYear);
+
+
+        ArrayAdapter<CharSequence> adaptMonth = ArrayAdapter.createFromResource(this,
+                R.array.month, android.R.layout.simple_spinner_item);
+        spMonth.setAdapter(adaptMonth);
+
+
+        Date d = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(d);
+        int month = cal.get(Calendar.MONTH);
+
+        spMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1,
+                                       int arg2, long arg3) {
+                int m = spMonth.getSelectedItemPosition();
+                double ac = ac_montly[m];
+                double es = calculateMoneySaving(ac);
+                DecimalFormat df = new DecimalFormat("#.00");
+
+                tvEnergyMonth.setText(df.format(ac) + " kWh");
+                tvSavingMonth.setText("$" + df.format(es));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+                // TODO Auto-generated method stub
+
+            }
+        });
+        spMonth.setSelection(month);
     }
 
 
