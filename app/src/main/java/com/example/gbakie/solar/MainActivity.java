@@ -33,9 +33,12 @@ public class MainActivity extends Activity {
 
     private EditText etZip;
     public final static String MESSAGE1 = "com.example.gbakie.MESSAGE1";
-    //private EditText etCapacity;
     private Spinner spCapacity;
     private Spinner spOccupants;
+    public final static String AC_MONTHLY = "com.example.gbakie.AC_MONTHLY";
+    public final static String SOLRAD_MONTHLY = "com.example.gbakie.SOLRAD_MONTHLY";
+    public final static String OCCUPANTS = "com.example.gbakie.OCCUPANTS";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,35 +89,39 @@ public class MainActivity extends Activity {
         new DataRequest().execute(params);
     }
 
-    public void processFinish(String s) {
-        Intent intent = new Intent(this, ResultActivity.class);
-
-        intent.putExtra(MESSAGE1, s);
-        startActivity(intent);
-    }
 
     public void processData(String json) {
+        double[] ac_monthly = null;
+        double[] solrad_monthly = null;
         try {
             JSONObject json_obj = new JSONObject(json);
 
             JSONArray ac_monthly_json = json_obj.getJSONObject("outputs").getJSONArray("ac_monthly");
             JSONArray solrad_monthly_json = json_obj.getJSONObject("outputs").getJSONArray("solrad_monthly");
 
-            List<Double> ac_monthly = new ArrayList<Double>();
-            if (ac_monthly_json != null)
+            if (ac_monthly_json != null) {
+                ac_monthly = new double[ac_monthly_json.length()];
                 for (int i = 0; i < ac_monthly_json.length(); i++)
-                    ac_monthly.add(ac_monthly_json.getDouble(i));
+                    ac_monthly[i] = ac_monthly_json.getDouble(i);
+            }
 
-
-            List<Double> solrad_monthly = new ArrayList<Double>();
-            if (solrad_monthly_json != null)
+            if (solrad_monthly_json != null) {
+                solrad_monthly = new double[solrad_monthly_json.length()];
                 for (int i = 0; i < solrad_monthly_json.length(); i++)
-                    solrad_monthly.add(solrad_monthly_json.getDouble(i));
+                    solrad_monthly[i] = solrad_monthly_json.getDouble(i);
+            }
 
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        Intent intent = new Intent(this, ResultActivity.class);
+
+        intent.putExtra(AC_MONTHLY, ac_monthly);
+        intent.putExtra(SOLRAD_MONTHLY, solrad_monthly);
+        intent.putExtra(OCCUPANTS, spOccupants.getSelectedItemPosition() + 1);
+        startActivity(intent);
     }
 
 
@@ -170,7 +177,6 @@ public class MainActivity extends Activity {
         protected void onPostExecute(String result) {
             pDialog.dismiss();
             processData(result);
-            processFinish(result);
         }
 
         protected String convertStreamToText(InputStream is) throws IOException {
