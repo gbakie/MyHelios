@@ -178,7 +178,7 @@ public class ResultActivity extends Activity {
             thermal_monthly_carbon_savings[i] = thermal_monthly_energy_savings[i] * CARBON_POUNDS_PER_KWH_THERMAL;
         }
         thermal_percentage_savings_year = thermal_percentage_savings_year / 12;
-        thermal_carbon_savings_year = Math.round(thermal_energy_savings_year * CARBON_POUNDS_PER_KWH_THERMAL);
+        thermal_carbon_savings_year = thermal_energy_savings_year * CARBON_POUNDS_PER_KWH_THERMAL;
     }
 
     public void calculatePV() {
@@ -194,7 +194,6 @@ public class ResultActivity extends Activity {
             pv_monthly_carbon_savings[i] = pv_monthly_energy_savings[i] * CARBON_POUNDS_PER_KWH_PV;
             pv_carbon_savings_year += pv_monthly_carbon_savings[i];
         }
-        pv_carbon_savings_year = Math.round(pv_carbon_savings_year);
     }
 
     public void calculatePVPayback() {
